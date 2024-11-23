@@ -1,0 +1,22 @@
+services:
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    ports: 
+      - '27017:27017'
+  handler:
+    container_name: handler
+    image: handler-console
+    stdin_open: true
+    tty: true
+    build:
+      context: .
+      dockerfile: Handler/External/Presentation/Dockerfile
+  punter:
+    container_name: punter
+    image: punter-console
+    stdin_open: true
+    tty: true
+    build:
+      context: .
+      dockerfile: Punter/External/Presentation/Dockerfile

@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Handler.Presentation": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
