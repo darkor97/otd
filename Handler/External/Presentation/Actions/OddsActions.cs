@@ -169,5 +169,29 @@ namespace Handler.Presentation.Actions
                 Console.Clear();
             }
         }
+
+        public async Task DeleteAsync()
+        {
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("Enter the row number of match you want to delete (value in # column)");
+            Console.ForegroundColor = ConsoleColor.White;
+
+            if (int.TryParse(Console.ReadLine(), CultureInfo.InvariantCulture, out var number))
+            {
+                if (_memoryCache.TryGetValue(number, out string? id) && !string.IsNullOrEmpty(id))
+                {
+                    if (await _oddsService.DeleteOddsAsync(id))
+                    {
+                        Console.WriteLine($"Odds number: {number} deleted, returning..");
+                        Thread.Sleep(1500);
+                        Console.Clear();
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Odds number: {number} failed to be deleted, try again with a different number");
+                    }
+                }
+            }
+        }
     }
 }

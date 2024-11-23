@@ -25,7 +25,7 @@ namespace Handler.Presentation
             {
                 oddsActions.ShowInstructions();
                 Console.WriteLine("Enter command (ignores case)");
-                var userCommand = Console.ReadLine();
+                var userCommand = Console.ReadLine() ?? string.Empty;
 
                 switch (userCommand.ToUpperInvariant())
                 {
@@ -39,7 +39,10 @@ namespace Handler.Presentation
                         await oddsActions.UpdateAsync();
                         break;
                     case "D":
-                        await oddsActions.PrintAllAsync();
+                        await oddsActions.DeleteAsync();
+                        break;
+                    case "P":
+                        Console.WriteLine("add publish method");
                         break;
                     case "S":
                         Console.WriteLine("Stopping process");
