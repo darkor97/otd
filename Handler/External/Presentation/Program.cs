@@ -36,7 +36,7 @@ namespace Handler.Presentation
                         await oddsActions.PrintAllAsync();
                         break;
                     case "U":
-                        await oddsActions.PrintAllAsync();
+                        await oddsActions.UpdateAsync();
                         break;
                     case "D":
                         await oddsActions.PrintAllAsync();

@@ -9,6 +9,8 @@ namespace Handler.Presentation
         {
             services
                 .AddSingleton<OddsActions>();
+            services
+                .AddMemoryCache();
 
             return services;
         }

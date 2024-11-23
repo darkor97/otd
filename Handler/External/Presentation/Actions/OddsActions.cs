@@ -1,5 +1,6 @@
 ﻿using Handler.Application.Services;
 using Handler.Domain;
+using Microsoft.Extensions.Caching.Memory;
 using System.Globalization;
 
 namespace Handler.Presentation.Actions
@@ -7,8 +8,13 @@ namespace Handler.Presentation.Actions
     public class OddsActions
     {
         private readonly IOddsService _oddsService;
+        private readonly IMemoryCache _memoryCache;
 
-        public OddsActions(IOddsService oddsService) => _oddsService = oddsService;
+        public OddsActions(IOddsService oddsService, IMemoryCache memoryCache)
+        {
+            _oddsService = oddsService;
+            _memoryCache = memoryCache;
+        }
 
         public void ShowInstructions()
         {
@@ -38,12 +44,12 @@ namespace Handler.Presentation.Actions
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("Please specify Home Team");
             Console.ForegroundColor = ConsoleColor.White;
-            var homeTeam = Console.ReadLine();
+            var homeTeam = Console.ReadLine() ?? string.Empty;
 
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("Please specify Away Team");
             Console.ForegroundColor = ConsoleColor.White;
-            var awayTeam = Console.ReadLine();
+            var awayTeam = Console.ReadLine() ?? string.Empty;
 
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("Please specify Home Odds");
@@ -90,15 +96,78 @@ namespace Handler.Presentation.Actions
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("All odds overview");
             Console.WriteLine();
-            Console.WriteLine("Home | Away | Home Win | Draw | Away Win} ");
+            Console.WriteLine("# | Home | Away | Home Win | Draw | Away Win |");
             Console.WriteLine("-----------------");
             Console.ForegroundColor = ConsoleColor.Blue;
+            var i = 1;
             foreach (var odd in odds)
             {
-                Console.WriteLine($"{odd.HomeTeam} vs {odd.AwayTeam}: {odd.HomeOdds} - {odd.DrawOdds} - {odd.AwayOdds}");
+                Console.WriteLine($"{i} | {odd.HomeTeam} vs {odd.AwayTeam}: {odd.HomeOdds} - {odd.DrawOdds} - {odd.AwayOdds}");
+                _memoryCache.Set(i++, odd.Id);
                 Console.WriteLine("-----------------");
             }
             Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        public async Task UpdateAsync()
+        {
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("Enter the row number of match you want to edit (value in # column)");
+            Console.ForegroundColor = ConsoleColor.White;
+            int.TryParse(Console.ReadLine(), out var matchNumber);
+
+            var id = _memoryCache.Get<string>(matchNumber);
+            if (!string.IsNullOrEmpty(id))
+            {
+                var odds = await _oddsService.GetOddsAsync(id);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Match to update is {odds.HomeTeam} vs {odds.AwayTeam}");
+                Console.WriteLine($"Set new odds (blank for no change)");
+                Console.WriteLine("Set home odds");
+                Console.ForegroundColor = ConsoleColor.White;
+                if (double.TryParse(Console.ReadLine(), CultureInfo.InvariantCulture, out var homeOdds))
+                {
+                    odds.HomeOdds = homeOdds;
+                }
+                else
+                {
+                    Console.WriteLine("Blank or no input, odds will not change");
+                }
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Set away odds");
+                Console.ForegroundColor = ConsoleColor.White;
+                if (double.TryParse(Console.ReadLine(), CultureInfo.InvariantCulture, out var awayOdds))
+                {
+                    odds.AwayOdds = awayOdds;
+                }
+                else
+                {
+                    Console.WriteLine("Blank or no input, odds will not change");
+                }
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Set draw odds");
+                Console.ForegroundColor = ConsoleColor.White;
+                if (double.TryParse(Console.ReadLine(), CultureInfo.InvariantCulture, out var drawOdds))
+                {
+                    odds.DrawOdds = drawOdds;
+                }
+                else
+                {
+                    Console.WriteLine("Blank or no input, odds will not change");
+                }
+
+                await _oddsService.UpdateOddsAsync(odds);
+                Console.WriteLine("Odds updated successfully, returning..");
+                Thread.Sleep(1500);
+                Console.Clear();
+            }
+            else
+            {
+                Console.WriteLine($"No game with number: {matchNumber} exists");
+                Console.Clear();
+            }
         }
     }
 }
