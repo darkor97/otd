@@ -12,6 +12,9 @@
  6. In the other window enter command `docker attach punter` to interact with the punter application
  7. Once finished with the app run stop using CTRL+C
  8. Enter command `docker-compose -p otd down` to cleanup resources
+    - Run `docker image rm handler-console` 
+    - Run `docker image rm punter-console`
+    - Run `docker image rm mongo`
 
  ## Run tests
   1. If using Visual Studio, press shortcut keys for running all tests __(default CTRL+R, A) (TestExplorer.RunAllTests)__
