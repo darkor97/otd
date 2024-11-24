@@ -5,7 +5,7 @@ namespace Handler.Application.Extensions
 {
     public static class ApplicationExtensions
     {
-        public static IServiceCollection AddHandlerApplicationExtensions(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddApplicationExtensions(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<IOddsService, OddsService>();
 

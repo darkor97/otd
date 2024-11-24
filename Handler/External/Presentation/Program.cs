@@ -1,6 +1,7 @@
 ﻿using Handler.Application.Extensions;
 using Handler.Infrastructure.Mongo;
 using Handler.Presentation.Actions;
+using Handler.Presentation.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -11,9 +12,9 @@ namespace Handler.Presentation
         static async Task Main(string[] args)
         {
             var serviceProvider = new ServiceCollection()
-                .AddHandlerInfrastructureExtensions()
-                .AddHandlerApplicationExtensions()
-                .AddHandlerPresentationExtensions()
+                .AddInfrastructureExtensions()
+                .AddApplicationExtensions()
+                .AddPresentationExtensions()
                 .AddLogging(builder => builder.AddConsole())
                 .BuildServiceProvider();
 

@@ -6,16 +6,16 @@ using System.Text.Json;
 
 namespace Handler.Application.Services
 {
-    public class OddsService : IOddsService
+    internal class OddsService : IOddsService
     {
         private readonly IOddsRepository _oddsRepository;
-        private readonly IMessagePublisher _messagePublisher;
+        private readonly IMessageQueueProvider _messageQueueProvider;
         private readonly ILogger<OddsService> _logger;
 
-        public OddsService(IOddsRepository oddsRepository, IMessagePublisher messagePublisher, ILogger<OddsService> logger)
+        public OddsService(IOddsRepository oddsRepository, IMessageQueueProvider messageQueueProvider, ILogger<OddsService> logger)
         {
             _oddsRepository = oddsRepository;
-            _messagePublisher = messagePublisher;
+            _messageQueueProvider = messageQueueProvider;
             _logger = logger;
         }
 
@@ -87,7 +87,7 @@ namespace Handler.Application.Services
             try
             {
                 var oddsToPublishAsString = JsonSerializer.Serialize(oddsToPublish);
-                await _messagePublisher.PublishAsync(oddsToPublishAsString, cancellation);
+                await _messageQueueProvider.PublishAsync(oddsToPublishAsString, cancellation);
             }
             catch (Exception ex)
             {

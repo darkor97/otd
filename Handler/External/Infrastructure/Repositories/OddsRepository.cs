@@ -5,7 +5,7 @@ using MongoDB.Driver;
 
 namespace Handler.Infrastructure.Repositories
 {
-    public class OddsRepository : IOddsRepository
+    internal class OddsRepository : IOddsRepository
     {
         private readonly IMongoDatabase _mongoDatabase;
         private readonly ILogger<OddsRepository> _logger;

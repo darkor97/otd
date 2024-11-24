@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace Handler.Presentation.Actions
 {
-    public class OddsActions
+    internal class OddsActions
     {
         private readonly IOddsService _oddsService;
         private readonly IMemoryCache _memoryCache;

@@ -12,7 +12,7 @@ namespace Handler.Infrastructure.Mongo
 {
     public static class InfrastructureExtensions
     {
-        public static IServiceCollection AddHandlerInfrastructureExtensions(this IServiceCollection services)
+        public static IServiceCollection AddInfrastructureExtensions(this IServiceCollection services)
         {
             services.AddSingleton<IMongoClient>(serviceProvider =>
             {
@@ -40,7 +40,7 @@ namespace Handler.Infrastructure.Mongo
             });
 
             services.AddScoped<IOddsRepository, OddsRepository>();
-            services.AddScoped<IMessagePublisher, MessagePublisher>();
+            services.AddScoped<IMessageQueueProvider, RabbitMQProvider>();
 
             return services;
         }

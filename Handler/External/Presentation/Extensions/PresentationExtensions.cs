@@ -1,11 +1,11 @@
 ﻿using Handler.Presentation.Actions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Handler.Presentation
+namespace Handler.Presentation.Extensions
 {
-    public static class HandlerPresentationExtensions
+    public static class PresentationExtensions
     {
-        public static IServiceCollection AddHandlerPresentationExtensions(this IServiceCollection services)
+        public static IServiceCollection AddPresentationExtensions(this IServiceCollection services)
         {
             services
                 .AddSingleton<OddsActions>();
