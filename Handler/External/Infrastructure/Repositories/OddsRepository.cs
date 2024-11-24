@@ -16,12 +16,12 @@ namespace Handler.Infrastructure.Repositories
             _logger = logger;
         }
 
-        public async Task<Odds> CreateOddsAsync(Odds odds)
+        public async Task<Odds> CreateOddsAsync(Odds odds, CancellationToken cancellationToken = default)
         {
             try
             {
                 var collection = GetCollection();
-                await collection.InsertOneAsync(odds);
+                await collection.InsertOneAsync(odds, cancellationToken: cancellationToken);
                 return odds;
             }
             catch (Exception ex)
@@ -31,12 +31,12 @@ namespace Handler.Infrastructure.Repositories
             }
         }
 
-        public async Task<IEnumerable<Odds>> GetAllOddsAsync()
+        public async Task<IEnumerable<Odds>> GetAllOddsAsync(CancellationToken cancellationToken = default)
         {
             try
             {
                 var collection = GetCollection();
-                return await collection.Find(_ => true).ToListAsync();
+                return await collection.Find(_ => true).ToListAsync(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -45,12 +45,12 @@ namespace Handler.Infrastructure.Repositories
             }
         }
 
-        public async Task<Odds> GetOddsAsync(string id)
+        public async Task<Odds> GetOddsAsync(string id, CancellationToken cancellationToken = default)
         {
             try
             {
                 var collections = GetCollection();
-                return await collections.Find(x => x.Id == id).FirstAsync();
+                return await collections.Find(x => x.Id == id).FirstAsync(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -59,12 +59,12 @@ namespace Handler.Infrastructure.Repositories
             }
         }
 
-        public async Task<Odds> UpdateOddsAsync(Odds odds)
+        public async Task<Odds> UpdateOddsAsync(Odds odds, CancellationToken cancellationToken = default)
         {
             try
             {
                 var collection = GetCollection();
-                var result = await collection.ReplaceOneAsync(x => x.Id == odds.Id, odds);
+                var result = await collection.ReplaceOneAsync(x => x.Id == odds.Id, odds, cancellationToken: cancellationToken);
                 if (result.IsAcknowledged && result.MatchedCount > 0 && result.ModifiedCount > 0)
                 {
                     return odds;
@@ -82,11 +82,19 @@ namespace Handler.Infrastructure.Repositories
 
         }
 
-        public async Task<bool> DeleteOddsAsync(string id)
+        public async Task<bool> DeleteOddsAsync(string id, CancellationToken cancellationToken = default)
         {
-            var collection = GetCollection();
-            var result = await collection.DeleteOneAsync(x => x.Id == id);
-            return result.IsAcknowledged;
+            try
+            {
+                var collection = GetCollection();
+                var result = await collection.DeleteOneAsync(x => x.Id == id, cancellationToken);
+                return result.IsAcknowledged;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to deleted odds");
+                throw;
+            }
         }
 
         private IMongoCollection<Odds> GetCollection() => _mongoDatabase.GetCollection<Odds>(nameof(Odds));

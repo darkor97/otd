@@ -1,4 +1,5 @@
-﻿using Handler.Domain.Repositories;
+﻿using Handler.Application.Publish;
+using Handler.Domain.Repositories;
 using Handler.Infrastructure.Configuration;
 using Handler.Infrastructure.Extensions;
 using Handler.Infrastructure.Publish;

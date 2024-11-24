@@ -1,25 +1,29 @@
-﻿using Handler.Domain;
+﻿using Handler.Application.Publish;
+using Handler.Domain;
 using Handler.Domain.Repositories;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace Handler.Application.Services
 {
     public class OddsService : IOddsService
     {
         private readonly IOddsRepository _oddsRepository;
+        private readonly IMessagePublisher _messagePublisher;
         private readonly ILogger<OddsService> _logger;
 
-        public OddsService(IOddsRepository oddsRepository, ILogger<OddsService> logger)
+        public OddsService(IOddsRepository oddsRepository, IMessagePublisher messagePublisher, ILogger<OddsService> logger)
         {
             _oddsRepository = oddsRepository;
+            _messagePublisher = messagePublisher;
             _logger = logger;
         }
 
-        public async Task<Odds> CreateOddsAsync(Odds odds)
+        public async Task<Odds> CreateOddsAsync(Odds odds, CancellationToken cancellationToken = default)
         {
             try
             {
-                return await _oddsRepository.CreateOddsAsync(odds);
+                return await _oddsRepository.CreateOddsAsync(odds, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -27,11 +31,11 @@ namespace Handler.Application.Services
                 throw;
             }
         }
-        public async Task<Odds> UpdateOddsAsync(Odds odds)
+        public async Task<Odds> UpdateOddsAsync(Odds odds, CancellationToken cancellationToken = default)
         {
             try
             {
-                return await _oddsRepository.UpdateOddsAsync(odds);
+                return await _oddsRepository.UpdateOddsAsync(odds, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -40,11 +44,11 @@ namespace Handler.Application.Services
             }
         }
 
-        public async Task<IEnumerable<Odds>> GetAllOddsAsync()
+        public async Task<IEnumerable<Odds>> GetAllOddsAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                return await _oddsRepository.GetAllOddsAsync();
+                return await _oddsRepository.GetAllOddsAsync(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -53,11 +57,11 @@ namespace Handler.Application.Services
             }
         }
 
-        public async Task<Odds> GetOddsAsync(string id)
+        public async Task<Odds> GetOddsAsync(string id, CancellationToken cancellationToken = default)
         {
             try
             {
-                return await _oddsRepository.GetOddsAsync(id);
+                return await _oddsRepository.GetOddsAsync(id, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -65,15 +69,29 @@ namespace Handler.Application.Services
                 throw;
             }
         }
-        public async Task<bool> DeleteOddsAsync(string id)
+        public async Task<bool> DeleteOddsAsync(string id, CancellationToken cancellationToken = default)
         {
             try
             {
-                return await _oddsRepository.DeleteOddsAsync(id);
+                return await _oddsRepository.DeleteOddsAsync(id, cancellationToken);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to delete odds with id: {id}", id);
+                throw;
+            }
+        }
+
+        public async Task PublishAsync(IEnumerable<Odds> oddsToPublish, CancellationToken cancellation = default)
+        {
+            try
+            {
+                var oddsToPublishAsString = JsonSerializer.Serialize(oddsToPublish);
+                await _messagePublisher.PublishAsync(oddsToPublishAsString, cancellation);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to publish odds to consumers");
                 throw;
             }
         }

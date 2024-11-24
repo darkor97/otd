@@ -19,38 +19,46 @@ namespace Handler.Presentation
 
             var oddsActions = serviceProvider.GetRequiredService<OddsActions>();
 
-            Console.WriteLine("Handler UI");
-
             while (true)
             {
                 oddsActions.ShowInstructions();
                 Console.WriteLine("Enter command (ignores case)");
                 var userCommand = Console.ReadLine() ?? string.Empty;
 
-                switch (userCommand.ToUpperInvariant())
+                try
                 {
-                    case "C":
-                        await oddsActions.CreateAsync();
-                        break;
-                    case "A":
-                        await oddsActions.PrintAllAsync();
-                        break;
-                    case "U":
-                        await oddsActions.UpdateAsync();
-                        break;
-                    case "D":
-                        await oddsActions.DeleteAsync();
-                        break;
-                    case "P":
-                        await oddsActions.PublishAsync();
-                        break;
-                    case "S":
-                        Console.WriteLine("Stopping process");
-                        await oddsActions.CTS.CancelAsync();
-                        return;
-                    default:
-                        Console.WriteLine("Unrecognized command");
-                        break;
+                    switch (userCommand.ToUpperInvariant())
+                    {
+                        case "C":
+                            await oddsActions.CreateAsync();
+                            break;
+                        case "A":
+                            await oddsActions.PrintAllAsync();
+                            break;
+                        case "U":
+                            await oddsActions.UpdateAsync();
+                            break;
+                        case "D":
+                            await oddsActions.DeleteAsync();
+                            break;
+                        case "P":
+                            await oddsActions.PublishAsync();
+                            break;
+                        case "S":
+                            Console.WriteLine("Stopping process");
+                            await oddsActions.CTS.CancelAsync();
+                            return;
+                        default:
+                            Console.WriteLine("Unrecognized command");
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An error occurred {ex.Message}");
+                    Console.Write("Retry..");
+                    Thread.Sleep(1500);
+                    Console.Clear();
                 }
             }
         }

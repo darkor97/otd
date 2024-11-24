@@ -1,6 +1,5 @@
 ﻿using Handler.Application.Services;
 using Handler.Domain;
-using Handler.Infrastructure.Publish;
 using Microsoft.Extensions.Caching.Memory;
 using System.Globalization;
 
@@ -10,13 +9,11 @@ namespace Handler.Presentation.Actions
     {
         private readonly IOddsService _oddsService;
         private readonly IMemoryCache _memoryCache;
-        private readonly IMessagePublisher _messagePublisher;
 
-        public OddsActions(IOddsService oddsService, IMemoryCache memoryCache, IMessagePublisher messagePublisher)
+        public OddsActions(IOddsService oddsService, IMemoryCache memoryCache)
         {
             _oddsService = oddsService;
             _memoryCache = memoryCache;
-            _messagePublisher = messagePublisher;
 
             CTS = new CancellationTokenSource();
             SetCallCancelOnConsoleExit();
@@ -204,10 +201,17 @@ namespace Handler.Presentation.Actions
 
         public async Task PublishAsync()
         {
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("Odds to update");
+            try
+            {
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine("Odds to update");
 
-            await _messagePublisher.PublishAsync("test publish", CTS.Token);
+                await _oddsService.PublishAsync(null, CTS.Token);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         private void SetCallCancelOnConsoleExit()
