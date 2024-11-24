@@ -6,7 +6,7 @@ using System.Text.Json;
 
 namespace Handler.Application.Services
 {
-    internal class OddsService : IOddsService
+    public class OddsService : IOddsService
     {
         private readonly IOddsRepository _oddsRepository;
         private readonly IMessageQueueProvider _messageQueueProvider;

@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="moq" Version="4.20.72" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.6.3" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.6.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Application\Handler.Application.csproj" />
+    <ProjectReference Include="..\Core\Domain\Handler.Domain.csproj" />
+    <ProjectReference Include="..\External\Infrastructure\Handler.Infrastructure.csproj" />
+    <ProjectReference Include="..\External\Presentation\Handler.Presentation.csproj" />
+  </ItemGroup>
+
+</Project>
