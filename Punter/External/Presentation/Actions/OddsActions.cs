@@ -22,7 +22,7 @@ namespace Punter.Presentation.Actions
             await _messageQueueProvider.SubscribeAsync(messageHandler, _cancellationTokenSource.Token);
         }
 
-        private void messageHandler(string message)
+        private Task messageHandler(string message)
         {
             var odds = JsonSerializer.Deserialize<IEnumerable<Odds>>(message);
 
@@ -41,6 +41,8 @@ namespace Punter.Presentation.Actions
                     Console.WriteLine($"#{counter++} | {odd.HomeTeam} vs {odd.AwayTeam} | Home Win - {odd.HomeOdds} | Draw - {odd.DrawOdds} | Away Win - {odd.AwayOdds}");
                 }
             }
+
+            return Task.CompletedTask;
         }
 
         public async ValueTask DisposeAsync()

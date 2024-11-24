@@ -46,7 +46,7 @@ namespace Handler.Infrastructure.Publish
             }
         }
 
-        public async Task SubscribeAsync(Action<string> messageReceivedCallback, CancellationToken cancellationToken = default)
+        public async Task SubscribeAsync(Func<string, Task> messageReceivedCallback, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -62,7 +62,7 @@ namespace Handler.Infrastructure.Publish
                 {
                     var body = ea.Body.ToArray();
                     var message = Encoding.UTF8.GetString(body);
-                    messageReceivedCallback(message);
+                    await messageReceivedCallback(message);
                 };
 
                 await channel.BasicConsumeAsync(QueueName, autoAck: true, consumer: consumer);
