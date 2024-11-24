@@ -203,18 +203,21 @@ namespace Handler.Presentation.Actions
 
         public async Task PublishAsync()
         {
-            try
-            {
-                Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine("Odds to update");
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("Odds to update");
+            Console.ForegroundColor = ConsoleColor.White;
 
-                var odds = await _oddsService.GetAllOddsAsync();
-                await _oddsService.PublishAsync(odds, CTS.Token);
-            }
-            catch (Exception ex)
+            var odds = await _oddsService.GetAllOddsAsync();
+            foreach (var odd in odds)
             {
-                throw;
+                Console.WriteLine($"{odd.HomeTeam} vs {odd.AwayTeam} | {odd.HomeOdds} | {odd.DrawOdds} | {odd.AwayOdds}");
             }
+
+            await _oddsService.PublishAsync(odds, CTS.Token);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Odds updated, returning..");
+            Thread.Sleep(1500);
+            Console.Clear();
         }
 
         private void SetCallCancelOnConsoleExit()
