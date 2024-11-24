@@ -17,5 +17,14 @@
     - Run `docker image rm mongodb`
     - Run `docker image rm rabbitmq`
 
- ## Run tests
-  1. If using Visual Studio, press shortcut keys for running all tests __(default CTRL+R, A) (TestExplorer.RunAllTests)__
+## Run 
+### Unit tests
+Find tests in the test explorer from the group `Handler.Tests.Application` and run it.
+Alternatively navigate to test folder location  ./{Project-Root}/Handler/Tests and run `dotnet test --filter "Handler.Tests.Application"`
+### Integration tests
+__Ensure mongo docker image is running for integration tests.__
+Find tests in the test explorer from the group  `Handler.Tests.Integration` and run it.
+Alternatively navigate to test folder location  ./{Project-Root}/Handler/Tests and run `dotnet test --filter "Handler.Tests.Integration"`
+
+If using Visual Studio and docker container for mongodb is running, press shortcut keys for running all tests __(default CTRL+R, A) (TestExplorer.RunAllTests)__
+Alternatively navigate to test folder location  ./{Project-Root}/Handler/Tests and run `dotnet test`
