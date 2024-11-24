@@ -42,10 +42,11 @@ namespace Handler.Presentation
                         await oddsActions.DeleteAsync();
                         break;
                     case "P":
-                        Console.WriteLine("add publish method");
+                        await oddsActions.PublishAsync();
                         break;
                     case "S":
                         Console.WriteLine("Stopping process");
+                        await oddsActions.CTS.CancelAsync();
                         return;
                     default:
                         Console.WriteLine("Unrecognized command");

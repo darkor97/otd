@@ -1,9 +1,11 @@
 ﻿using Handler.Domain.Repositories;
 using Handler.Infrastructure.Configuration;
 using Handler.Infrastructure.Extensions;
+using Handler.Infrastructure.Publish;
 using Handler.Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
+using RabbitMQ.Client;
 
 namespace Handler.Infrastructure.Mongo
 {
@@ -24,7 +26,20 @@ namespace Handler.Infrastructure.Mongo
                 return database;
             });
 
+            services.AddSingleton<IConnectionFactory>(servicesProvider =>
+            {
+                return new ConnectionFactory()
+                {
+                    HostName = InfrastructureConfiguration.RabbitMQSettings.HostName,
+                    Port = InfrastructureConfiguration.RabbitMQSettings.Port,
+                    UserName = InfrastructureConfiguration.RabbitMQSettings.UserName,
+                    Password = InfrastructureConfiguration.RabbitMQSettings.Password,
+                    VirtualHost = InfrastructureConfiguration.RabbitMQSettings.VirtualHost,
+                };
+            });
+
             services.AddScoped<IOddsRepository, OddsRepository>();
+            services.AddScoped<IMessagePublisher, MessagePublisher>();
 
             return services;
         }
