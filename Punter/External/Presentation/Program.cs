@@ -1,15 +1,35 @@
-﻿namespace Punter.Presentation
+﻿using Handler.Application.Extensions;
+using Handler.Infrastructure.Mongo;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Punter.Presentation.Actions;
+
+namespace Punter.Presentation
 {
     internal class Program
     {
-        static void Main(string[] args)
+        async static Task Main(string[] args)
         {
-            Console.WriteLine("Hello, Punter!");
-            while (true)
+            var serviceProvider = new ServiceCollection()
+               .AddInfrastructureExtensions()
+               .AddApplicationExtensions()
+               .AddMemoryCache()
+               .AddLogging(builder => builder.AddConsole())
+               .AddSingleton<OddsActions>()
+               .BuildServiceProvider();
+
+            var oddsActions = serviceProvider.GetRequiredService<OddsActions>();
+
+            try
             {
-                var rand = new Random();
-                Console.WriteLine("Some numb" + rand.NextDouble());
-                Thread.Sleep(rand.Next(5, 10) * 1000);
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine("Punter View");
+
+                await oddsActions.SubscribeAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Application error {ex.Message}, shutting down");
             }
         }
     }

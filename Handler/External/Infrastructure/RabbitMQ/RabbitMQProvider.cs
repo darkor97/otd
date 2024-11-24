@@ -46,7 +46,7 @@ namespace Handler.Infrastructure.Publish
             }
         }
 
-        public async Task<string> SubscribeAsync(CancellationToken cancellationToken = default)
+        public async Task SubscribeAsync(Action<string> messageReceivedCallback, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -58,14 +58,15 @@ namespace Handler.Infrastructure.Publish
                 await channel.QueueBindAsync(QueueName, Exchange, string.Empty, cancellationToken: cancellationToken);
 
                 var consumer = new AsyncEventingBasicConsumer(channel);
-                consumer.ReceivedAsync += (model, ea) =>
+                consumer.ReceivedAsync += async (model, ea) =>
                 {
                     var body = ea.Body.ToArray();
                     var message = Encoding.UTF8.GetString(body);
-                    return Task.FromResult(message);
+                    messageReceivedCallback(message);
                 };
 
-                return await channel.BasicConsumeAsync(QueueName, autoAck: true, consumer: consumer);
+                await channel.BasicConsumeAsync(QueueName, autoAck: true, consumer: consumer);
+                await Task.Delay(Timeout.Infinite, cancellationToken);
             }
             catch (Exception ex)
             {

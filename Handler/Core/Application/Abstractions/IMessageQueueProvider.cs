@@ -3,6 +3,6 @@
     public interface IMessageQueueProvider
     {
         Task PublishAsync(string message, CancellationToken cancellationToken = default);
-        Task<string> SubscribeAsync(CancellationToken cancellationToken = default);
+        Task SubscribeAsync(Action<string> messageReceivedCallback, CancellationToken cancellationToken = default);
     }
 }

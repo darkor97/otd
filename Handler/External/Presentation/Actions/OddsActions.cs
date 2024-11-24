@@ -5,10 +5,12 @@ using System.Globalization;
 
 namespace Handler.Presentation.Actions
 {
-    internal class OddsActions
+    internal class OddsActions : IAsyncDisposable
     {
         private readonly IOddsService _oddsService;
         private readonly IMemoryCache _memoryCache;
+
+        private bool _disposed = false;
 
         public OddsActions(IOddsService oddsService, IMemoryCache memoryCache)
         {
@@ -206,7 +208,8 @@ namespace Handler.Presentation.Actions
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine("Odds to update");
 
-                await _oddsService.PublishAsync(null, CTS.Token);
+                var odds = await _oddsService.GetAllOddsAsync();
+                await _oddsService.PublishAsync(odds, CTS.Token);
             }
             catch (Exception ex)
             {
@@ -218,9 +221,22 @@ namespace Handler.Presentation.Actions
         {
             Console.CancelKeyPress += (sender, e) =>
             {
-                e.Cancel = true;
                 CTS.Cancel();
+                Console.Clear();
+                Console.Write("Terminating application..");
+                Environment.Exit(0);
             };
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (_disposed)
+                return;
+
+            await CTS.CancelAsync();
+            CTS.Dispose();
+
+            _disposed = true;
         }
     }
 }
