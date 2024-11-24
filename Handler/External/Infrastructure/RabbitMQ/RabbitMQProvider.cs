@@ -53,8 +53,8 @@ namespace Handler.Infrastructure.Publish
                 await using var connection = await _factory.CreateConnectionAsync(cancellationToken);
                 await using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
+                await channel.QueueDeclareAsync(QueueName, true, false, false, cancellationToken: cancellationToken);
                 await channel.ExchangeDeclareAsync(Exchange, ExchangeType.Fanout, cancellationToken: cancellationToken);
-                await channel.QueueDeclareAsync();
                 await channel.QueueBindAsync(QueueName, Exchange, string.Empty, cancellationToken: cancellationToken);
 
                 var consumer = new AsyncEventingBasicConsumer(channel);

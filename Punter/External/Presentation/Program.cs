@@ -22,10 +22,11 @@ namespace Punter.Presentation
 
             try
             {
-                Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine("Punter View");
 
                 await oddsActions.SubscribeAsync();
+
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine("Punter View");
             }
             catch (Exception ex)
             {

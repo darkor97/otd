@@ -15,6 +15,9 @@ services:
     image: handler-console
     stdin_open: true
     tty: true
+    depends_on:
+      - mongodb
+      - rabbitmq
     build:
       context: .
       dockerfile: Handler/External/Presentation/Dockerfile
@@ -23,6 +26,8 @@ services:
     image: punter-console
     stdin_open: true
     tty: true
+    depends_on:
+      - rabbitmq
     build:
       context: .
       dockerfile: Punter/External/Presentation/Dockerfile

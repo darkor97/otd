@@ -1,5 +1,7 @@
 ﻿using Handler.Application.Publish;
 using Handler.Domain;
+using Polly;
+using RabbitMQ.Client.Exceptions;
 using System.Text.Json;
 
 namespace Punter.Presentation.Actions
@@ -9,6 +11,7 @@ namespace Punter.Presentation.Actions
         private readonly IMessageQueueProvider _messageQueueProvider;
         private readonly CancellationTokenSource _cancellationTokenSource;
 
+        private const int MaxRetry = 5;
         private bool _disposed = false;
 
         public OddsActions(IMessageQueueProvider messageQueueProvider)
@@ -19,7 +22,22 @@ namespace Punter.Presentation.Actions
 
         public async Task SubscribeAsync()
         {
-            await _messageQueueProvider.SubscribeAsync(messageHandler, _cancellationTokenSource.Token);
+            var policy = Policy
+                .Handle<BrokerUnreachableException>()
+                .Or<TimeoutException>()
+                .WaitAndRetryAsync(
+                    MaxRetry,
+                    (attempt) => TimeSpan.FromSeconds(Math.Pow(2, attempt)),
+                    onRetry: (exception, timeSpan, retryCount, context) =>
+                    {
+                        if (retryCount == MaxRetry)
+                        {
+                            Console.WriteLine("RabbitMQ count not be reached. Stopping application..");
+                        }
+                        Console.WriteLine("RabbitMq not ready, retrying");
+                    });
+
+            await policy.ExecuteAsync(() => _messageQueueProvider.SubscribeAsync(messageHandler, _cancellationTokenSource.Token));
         }
 
         private Task messageHandler(string message)
@@ -42,6 +60,7 @@ namespace Punter.Presentation.Actions
                 }
             }
 
+            Console.ForegroundColor = ConsoleColor.White;
             return Task.CompletedTask;
         }
 
@@ -52,6 +71,8 @@ namespace Punter.Presentation.Actions
 
             await _cancellationTokenSource.CancelAsync();
             _cancellationTokenSource.Dispose();
+
+            Console.ForegroundColor = ConsoleColor.White;
 
             _disposed = true;
         }
