@@ -22,7 +22,6 @@ namespace Punter.Presentation
 
             try
             {
-
                 await oddsActions.SubscribeAsync();
 
                 Console.ForegroundColor = ConsoleColor.Blue;
