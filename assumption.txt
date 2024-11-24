@@ -1,0 +1,17 @@
+1. Cleanliness, structure, code readability are utmost priory.
+2. Small user count i.e. ensure requirements are present rather then being most optimal.
+3. Docker-compose to enable easy presentation and running, reducing necessary installation for viewers. 
+4. Message queue is durable and can act a a "draft" space for changed odds.
+5. Small data amount, therefore fine to read the entire database and pass in the message queue.
+6. Console app presentation layer (OddsActions) is mimicking a controller, so no interface. Global handler is in the try/catch block in program.cs
+  - Should also be easy to replace the console with a controller and be easy to connect to the application layer
+7. The punter app is referencing layers of the handler app for simplicity, effectively the app is a message queue subscriber, so not a lot of time was spent there.
+  - Also why the handler app has a subscribe method, should be in the punter app but done like that to be expedient
+  - Both apps should be their own solution for deployment, isolation etc. but for presentation too complex
+8. Debugging and testing is assumed to be done locally outside of a container, so localhost for connection string is necessary for using the app, for presentation the docker path is used.
+9. Test are rudimentary and using MSTest as xUnit has not released a .net9 compatible version. 
+  - Not all edge cases are covered in the application logic, as it's a POC 
+  - Case to be made for having tests for each layer in their own project, but for POC purposes too complex.
+10. Code done as to allow evolution from POC to a prototype i.e. starting point for a bigger app. 
+
+OTD name is an abbreviation that I made up for the oddestoodds.com imaginary website.
